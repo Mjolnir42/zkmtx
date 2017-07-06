@@ -15,7 +15,7 @@ specification if successful.
     └── <syncgroup>
         └── <job>
             ├── active
-            └── runlock
+            └── lock
 ```
 
 # Configuration
