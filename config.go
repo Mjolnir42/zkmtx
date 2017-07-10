@@ -21,21 +21,41 @@ import (
 // Config holds the runtime configuration which is expected to be
 // read from a UCL formatted file
 type Config struct {
-	Ensemble  string `json:"ensemble"`
+	// Zookeeper connect string host:port,host:port/chroot
+	Ensemble string `json:"ensemble"`
+	// Name of the syncgroup
 	SyncGroup string `json:"sync.group"`
-	LogFile   string `json:"log.file"`
-	User      string `json:"run.as.user"`
+	// Full path of the logfile
+	LogFile string `json:"log.file"`
+	// User to run Command under. Only root can switch users. Empty
+	// default to the same user as zkrun
+	User string `json:"run.as.user"`
 }
 
 // JobSpec holds the runtime configuration for a specific job which
 // is expected to be read from a UCL formatted file
 type JobSpec struct {
-	Command       string        `json:"command"`
-	StartSuccess  time.Duration `json:"start.success.delay,string"`
-	ExitPolicy    string        `json:"exit.policy"`
-	AfterStart    []string      `json:"after.start.success"`
-	AfterExitFail []string      `json:"after.exit.failure"`
-	AfterExit     []string      `json:"after.exit.always"`
+	// Command is the commandline to run
+	Command string `json:"command"`
+	// Parsed as time.Duration, the amount of time the command
+	// must be running after startup before the start is considered
+	// a success
+	StartSuccess time.Duration `json:"start.success.delay,string"`
+	// ExitPolicy determines what to do if the process exits. Options
+	// are:
+	//	- reaquire-lock, to try and run the command again
+	//	- run-command, to execute after.exit.failure commands
+	//	- terminate, to terminate zkrun
+	ExitPolicy string `json:"exit.policy"`
+	// Commandlines to run after a successful start. These must succeed
+	// or zkrun exits.
+	AfterStart []string `json:"after.start.success"`
+	// Commandlines to run if command exits with exitcode != 0 and
+	// ExitPolicy is set to run-command
+	AfterExitFail []string `json:"after.exit.failure"`
+	// Commandlines to always run if Command exits, regardless of
+	// exitcode or ExitPolicy.
+	AfterExit []string `json:"after.exit.always"`
 }
 
 // FromFile sets Config c based on the file contents
