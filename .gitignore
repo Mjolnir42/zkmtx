@@ -33,7 +33,7 @@ _testmain.go
 
 # Dev
 attic/
-/zkmtx
-/zkmtx.1
-/zkmtx.log
-/zkmtx.conf
+/zkrun
+/zkrun.1
+/zkrun.log
+/zkrun.conf
