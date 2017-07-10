@@ -16,6 +16,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -89,6 +90,7 @@ func run() int {
 	validUser()
 	validSyncGroup()
 	validExitPolicy(jobSpec.ExitPolicy)
+	validSuccessDelay()
 
 	// setup logfile
 	if lfh, err := reopen.NewFileWriter(conf.LogFile); err != nil {

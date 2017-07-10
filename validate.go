@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/user"
 	"strconv"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
@@ -35,6 +36,14 @@ func validExitPolicy(policy string) {
 func validSyncGroup() {
 	if conf.SyncGroup == `` {
 		assertOK(fmt.Errorf(`Invalid empty sync.group in configuration`))
+	}
+}
+
+func validSuccessDelay() {
+	now := time.Now().UTC()
+	delayed := now.Add(jobSpec.StartSuccess)
+	if delayed.Before(now) {
+		assertOK(fmt.Errorf(`Invalid negative success delay in job specification`))
 	}
 }
 
