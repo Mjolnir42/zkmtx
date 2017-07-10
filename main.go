@@ -111,6 +111,11 @@ func run() int {
 		return 1
 	}
 
+	zkmtxPath = filepath.Join(zkmtxPath, filepath.Base(*jobConfPath))
+	if !zkCreatePath(conn, zkmtxPath, true) {
+		return 1
+	}
+
 	lockPath = filepath.Join(zkmtxPath, `lock`)
 	if !zkCreatePath(conn, lockPath, true) {
 		return 1
