@@ -72,6 +72,9 @@ func run() int {
 
 	// read job specification
 	if !filepath.IsAbs(*jobConfPath) {
+		if !strings.HasSuffix(*jobConfPath, `.conf`) {
+			*jobConfPath = *jobConfPath + `.conf`
+		}
 		*jobConfPath = filepath.Join(
 			`/etc/zkrun/jobspec`,
 			*jobConfPath,
@@ -111,7 +114,8 @@ func run() int {
 		return 1
 	}
 
-	zkrunPath = filepath.Join(zkrunPath, filepath.Base(*jobConfPath))
+	zkrunPath = filepath.Join(zkrunPath, filepath.Base(
+		strings.TrimSuffix(*jobConfPath, `.conf`)))
 	if !zkCreatePath(conn, zkrunPath, true) {
 		return 1
 	}
