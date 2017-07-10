@@ -1,17 +1,17 @@
 # WORK IN PROGRESS
 
-# zkmtx
+# zkrun
 
-Zookeeper Mutex - ensure a command is running once.
+Zookeeper Run - run a daemon under Zookeeper lock.
 
-`zkmtx` tries to aquire its distributed lock and runs the job
+`zkrun` tries to aquire its distributed lock and runs the job
 specification if successful.
 
 # Zookeeper layout
 
 ```
 /
-└── zkmtx
+└── zkrun
     └── <syncgroup>
         └── <job>
             ├── active
@@ -22,17 +22,17 @@ specification if successful.
 
 ```
 /etc
- └── zkmtx
-     ├── zkmtx.conf
+ └── zkrun
+     ├── zkrun.conf
      └── jobspec
          ├── ...
          └── foobar.conf
 
-/etc/zkmtx/zkmtx.conf:
+/etc/zkrun/zkrun.conf:
 ensemble: <zk-connect-string>
 syncgroup: <name>
 
-/etc/zkmtx/jobspec/foobar.conf:
+/etc/zkrun/jobspec/foobar.conf:
 command: ...
 exit.policy: reaquire-lock|run-command|terminate
 after.start.success: [
@@ -52,7 +52,7 @@ after.exit.always: [
 # Execute
 
 ```
-zkmtx -lock <name> -- ${cmd}
+zkrun -lock <name> -- ${cmd}
 ```
 
 go doc syscall.SysProcAttr

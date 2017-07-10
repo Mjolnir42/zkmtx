@@ -6,7 +6,7 @@
  * that can be found in the LICENSE file.
  */
 
-package main // import "github.com/mjolnir42/zkmtx"
+package main // import "github.com/mjolnir42/zkrun"
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 )
 
-var lockPath, zkmtxPath, zkmtxVersion string
+var lockPath, zkrunPath, zkrunVersion string
 var conf *Config
 var jobSpec *JobSpec
 var logInitialized bool
@@ -40,12 +40,12 @@ func init() {
 	erebos.SetLogrusOptions()
 
 	// set goopt information
-	goopt.Version = zkmtxVersion
-	goopt.Suite = `zkMTX`
+	goopt.Version = zkrunVersion
+	goopt.Suite = `zkRUN`
 	goopt.Summary = `Command execution under distributed mutex lock`
 	goopt.Author = `Jörg Pernfuß`
 	goopt.Description = func() string {
-		return "zkMTX"
+		return "zkRUN"
 	}
 }
 
@@ -56,7 +56,7 @@ func main() {
 func run() int {
 	// parse command line flags
 	cliConfPath := goopt.String([]string{`-c`, `--config`},
-		`/etc/zkmtx/zkmtx.conf`, `Configuration file`)
+		`/etc/zkrun/zkrun.conf`, `Configuration file`)
 	jobConfPath := goopt.String([]string{`-j`, `--job`},
 		``, `Job name to run command`)
 	goopt.Parse(nil)
@@ -73,7 +73,7 @@ func run() int {
 	// read job specification
 	if !filepath.IsAbs(*jobConfPath) {
 		*jobConfPath = filepath.Join(
-			`/etc/zkmtx/jobspec`,
+			`/etc/zkrun/jobspec`,
 			*jobConfPath,
 		)
 	}
@@ -94,29 +94,29 @@ func run() int {
 		logrus.SetOutput(lfh)
 		logInitialized = true
 	}
-	logrus.Infoln(`Starting zkMTX`)
+	logrus.Infoln(`Starting zkRUN`)
 
 	conn, chroot := connect(conf.Ensemble)
 	defer conn.Close()
 	logrus.Infoln(`Configured zookeeper chroot:`, chroot)
 
 	// ensure fixed node hierarchy exists
-	if !zkHier(conn, filepath.Join(chroot, `zkmtx`), true) {
+	if !zkHier(conn, filepath.Join(chroot, `zkrun`), true) {
 		return 1
 	}
 
 	// ensure required nodes exist
-	zkmtxPath = filepath.Join(chroot, `zkmtx`, conf.SyncGroup)
-	if !zkCreatePath(conn, zkmtxPath, true) {
+	zkrunPath = filepath.Join(chroot, `zkrun`, conf.SyncGroup)
+	if !zkCreatePath(conn, zkrunPath, true) {
 		return 1
 	}
 
-	zkmtxPath = filepath.Join(zkmtxPath, filepath.Base(*jobConfPath))
-	if !zkCreatePath(conn, zkmtxPath, true) {
+	zkrunPath = filepath.Join(zkrunPath, filepath.Base(*jobConfPath))
+	if !zkCreatePath(conn, zkrunPath, true) {
 		return 1
 	}
 
-	lockPath = filepath.Join(zkmtxPath, `lock`)
+	lockPath = filepath.Join(zkrunPath, `lock`)
 	if !zkCreatePath(conn, lockPath, true) {
 		return 1
 	}
@@ -152,7 +152,7 @@ func leader(conn *zk.Conn, block chan error) {
 
 	var err error
 
-	active := filepath.Join(zkmtxPath, `active`)
+	active := filepath.Join(zkrunPath, `active`)
 	if !zkCreateEph(conn, active) {
 		close(block)
 		return

@@ -6,7 +6,7 @@
  * that can be found in the LICENSE file.
  */
 
-package main // import "github.com/mjolnir42/zkmtx"
+package main // import "github.com/mjolnir42/zkrun"
 
 import (
 	"fmt"
