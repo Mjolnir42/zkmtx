@@ -26,7 +26,7 @@ func validJob(job *string) {
 
 func validExitPolicy(policy string) {
 	switch policy {
-	case `reaquire-lock`, `terminate`:
+	case `reaquire-lock`, `run-command`, `terminate`:
 	default:
 		assertOK(fmt.Errorf("Invalid exit policy: %s", policy))
 	}

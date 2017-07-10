@@ -248,7 +248,7 @@ func leader(conn *zk.Conn, block chan error) {
 		fault = true
 	}
 
-	if fault {
+	if fault && conf.ExitPolicy == `run-command` {
 		// run all AfterExitFail commands
 		for i := range jobSpec.AfterExitFail {
 			aefLine, aefErr := shellwords.Parse(
